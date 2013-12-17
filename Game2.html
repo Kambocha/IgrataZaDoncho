@@ -1,0 +1,201 @@
+<html>
+<style>
+canvas {border:1px solid black}
+</style>
+<canvas width="900px" height="500px" id="canvas" style="background-image: url(GameImg/fon.png)"></canvas>
+<body>
+<p id="neshto"></p>
+<script>
+var canvas = document.getElementById("canvas");
+var ctx = canvas.getContext("2d");
+ctx.font = "bold 14px Arial",
+ctx.fillText(counter, 80, 20)
+var doncho = new Object("GameImg/doncho.png",50,400,80,100);
+var numcola = 5;
+var cola = new Array();
+
+for(var i = 0;i<numcola;i++){
+cola[i] = new Object("GameImg/coca-cola.png",Math.floor((Math.random()*900)+1),Math.floor((Math.random()*1000)+10),80,100);}
+var numie = 3;
+var ie= new Array();
+
+for(var i = 0;i<numie;i++){
+ie[i] = new Object("GameImg/IE8.png",Math.floor((Math.random()*900)+1),Math.floor((Math.random()*1000)+10),50,50);}
+var counter = 0;
+var isLeft = false;
+var isRight = false;
+var isSpace = false;
+var isShoot = false;
+setInterval(function() {
+document.getElementById("neshto").innerHTML = counter
+}, 100)
+
+
+
+
+
+                
+
+//Press
+function leftArrowPressed() {
+   isLeft = true
+   
+   
+}
+
+function rightArrowPressed() {
+   isRight = true
+ 
+}
+
+function spacePressed() {
+   isSpace = true
+}
+
+function shootPressed() {
+   isShoot = true
+}
+
+
+document.onkeydown = function(evt) {
+    evt = evt || window.event;
+    switch (evt.keyCode) {
+        case 37:
+            leftArrowPressed();
+            break;
+        case 39:
+            rightArrowPressed();
+            break;
+		case 32:
+            spacePressed();
+            break;
+		case 65:
+            shootPressed();
+            break;
+    }
+};   
+//Relase
+function leftArrowRalased() {
+   isLeft = false
+}
+
+function rightArrowRalased() {
+   isRight = false
+}
+
+function spaceRelased() {
+   isSpace = false
+}
+function shootRelased() {
+   isShoot = false
+}
+
+document.onkeyup = function(evt) {
+    evt = evt || window.event;
+    switch (evt.keyCode) {
+        case 37:
+            leftArrowRalased();
+            break;
+        case 39:
+            rightArrowRalased();
+            break;
+		case 32:
+		    spaceRelased()
+			break;
+		case 65:
+            shootRelased();
+            break;
+    }
+};  
+
+
+MainLoop();
+function MainLoop(){
+
+
+
+//Pre-Adjustment
+doncho.X += doncho.Velocity_X;
+for(var i = 0;i<numcola;i++){
+cola[i].Y += cola[i].Velocity_Y;}
+for(var i = 0;i<numie;i++){
+ie[i].Y += ie[i].Velocity_Y;}
+//Logic
+if (doncho == true) {display}
+if(isLeft) {doncho.Velocity_X = -4}
+if(isRight) {doncho.Velocity_X = 4}
+
+if (!isLeft && !isRight) {doncho.Velocity_X = 0}
+
+for(var i = 0;i<numcola;i++){
+	if(cola[i].Y > 500) {
+		cola[i].Velocity_Y = 1;
+		cola[i].Y = Math.floor((Math.random()*10)+1);
+		cola[i].X = Math.floor((Math.random()*1000)+1);
+						}
+cola[i].Velocity_Y += 0.01;
+	if(cola[i].isColliding(doncho)) {	
+	    cola[i].Velocity_Y = 1;
+		cola[i].Y = Math.floor((Math.random()*10)+1);
+		cola[i].X = Math.floor((Math.random()*1000)+1);
+		counter++;}
+}
+for(var i = 0;i<numie;i++){
+	if(ie[i].Y > 500) {
+		ie[i].Velocity_Y = 1;
+		ie[i].Y = Math.floor((Math.random()*1)+1);
+		ie[i].X = Math.floor((Math.random()*1000)+1);
+						}
+ie[i].Velocity_Y += 0.01;
+	if(ie[i].isColliding(doncho)) {	
+	    ie[i].Velocity_Y = 1;
+		ie[i].Y = Math.floor((Math.random()*1)+1);
+		ie[i].X = Math.floor((Math.random()*1000)+1);
+		ctx = false;
+		alert("Game Over*insert Super Mario game over song here*")
+		}
+}
+
+
+
+
+
+
+
+//Draw
+
+ctx.clearRect(0,0,canvas.width,canvas.height);
+ctx.drawImage(doncho.Sprite,doncho.X,doncho.Y);
+for(var i = 0;i<numcola;i++){
+ctx.drawImage(cola[i].Sprite,cola[i].X,cola[i].Y);}
+for(var i = 0;i<numie;i++){
+ctx.drawImage(ie[i].Sprite,ie[i].X,ie[i].Y);}
+setTimeout(MainLoop, 1000/110);
+}
+
+
+
+function Object(img,x,y,width,height){
+this.Sprite = new Image();
+this.Sprite.src = img;
+this.X = x;
+this.Y = y;
+this.Width = width;
+this.Height = height;
+this.Previous_X;
+this.Previous_Y;
+this.Velocity_X = 0;
+this.Velocity_Y = 0;
+
+this.isColliding = function(obj){
+ if (this.X > obj.X + obj.Width) return false;
+ if (this.X + this.Width < obj.X) return false;
+ if (this.Y > obj.Y + obj.Height) return false;
+ if (this.Y + this.Height < obj.Y) return false;
+ return true;
+}
+}
+
+</script>
+</body>
+</html>
