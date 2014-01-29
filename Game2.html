@@ -161,8 +161,8 @@ ie[i].Velocity_Y += 0.01;
 	    ie[i].Velocity_Y = 1;
 		ie[i].Y = Math.floor((Math.random()*1)+1);
 		ie[i].X = Math.floor((Math.random()*1000)+1);
-		counter = counter - 2;
-		if(counter < 0) {
+		counter = counter - 10;
+		if(counter <= 0) {
 	    ctx.clearRect(0,0,canvas.width,canvas.height);
 		ctx.font="50px Arial";
 		ctx.fillText("Game Over",300,250);
@@ -194,7 +194,7 @@ cafe[i].Velocity_Y += 0.01;
 	    cafe[i].Velocity_Y = 1;
 		cafe[i].Y = Math.floor((Math.random()*10)+1);
 		cafe[i].X = Math.floor((Math.random()*1000)+1);
-		counter++;
+		counter = counter + 4;
 }
 		
 }
