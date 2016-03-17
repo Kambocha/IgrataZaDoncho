@@ -1,20 +1,22 @@
 <html>
 <style>
-canvas {border:1px solid black}
+	canvas {border:1px solid black}
 </style>
 <canvas width="900px" height="500px" id="canvas" style="background-image: url(GameImg/fon.png)"></canvas>
-<body>
-<p id="neshto"></p>
-<p id="neshto1"></p>
+<body><br>
+<a href="">Restart</a><br>
+<input type="button" value="Pause" id="btn1" onclick="pauseGame()" /><br>
+<input type="button" value="Unpause" id="btn2" onclick="unpauseGame()" /><br>
 <script>
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
 var doncho = new Object("GameImg/doncho.png",50,400,80,100);
+var nakov = new Object("GameImg/peter.jpg",50,400,80,100);
 var numcafe = 1;
 var cafe = new Array();
 
 for(var i = 0;i<numcafe;i++){
-cafe[i] = new Object("GameImg/Cafe.png",Math.floor((Math.random()*900)+1),Math.floor((Math.random()*1000)+10),50,50);}
+cafe[i] = new Object("GameImg/coff_cup_icon_pitr-1979px.png",Math.floor((Math.random()*900)+1),Math.floor((Math.random()*1000)+10),50,50);}
 
 var numcola = 5;
 var cola = new Array();
@@ -28,20 +30,28 @@ var ie= new Array();
 for(var i = 0;i<numie;i++){
 ie[i] = new Object("GameImg/IE8.png",Math.floor((Math.random()*900)+1),Math.floor((Math.random()*1000)+10),50,50);}
 var counter = 0;
-
+var levelcounter = 1;
 
 var isLeft = false;
 var isRight = false;
 var isSpace = false;
 var isShoot = false;
 
-
-
-
-
+var isA = false;
+var isD = false;
                 
 
 //Press
+function APressed() {
+   isA = true
+   
+   
+}
+function DPressed() {
+   isD = true
+   
+   
+}
 function leftArrowPressed() {
    isLeft = true
    
@@ -74,12 +84,23 @@ document.onkeydown = function(evt) {
 		case 32:
             spacePressed();
             break;
-		case 65:
-            shootPressed();
+	    case 65:
+            APressed();
+            break;
+		case 68:
+            DPressed();
             break;
     }
 };   
 //Relase
+function ARelased() {
+	isA = false 
+
+}
+function DRelased() {
+	isD = false 
+
+}
 function leftArrowRalased() {
    isLeft = false
 }
@@ -108,7 +129,10 @@ document.onkeyup = function(evt) {
 		    spaceRelased()
 			break;
 		case 65:
-            shootRelased();
+            ARelased();
+            break;
+		case 68:
+            DRelased();
             break;
     }
 };  
@@ -120,8 +144,10 @@ function MainLoop(){
 
 
 //Pre-Adjustment
+nakov.X += nakov.Velocity_X;
 doncho.X += doncho.Velocity_X;
 if(doncho.X > 900) (doncho.Velocity_X = 0);
+if(nakov.X > 900) (nakov.Velocity_X = 0);
 for(var i = 0; i<numcafe;i++) {
 cafe[i].Y += cafe[i].Velocity_Y;}
 
@@ -137,7 +163,10 @@ ie[i].Y += ie[i].Velocity_Y;}
 ctx.clearRect(0,0,canvas.width,canvas.height);
 ctx.font="30px Arial";
 ctx.fillText("Score: "+counter,10,40);
+ctx.font="30px Arial";
+ctx.fillText("Level: "+levelcounter,760,40);
 ctx.drawImage(doncho.Sprite,doncho.X,doncho.Y);
+ctx.drawImage(nakov.Sprite,nakov.X,nakov.Y);
 for(var i = 0;i<numcola;i++){
 ctx.drawImage(cola[i].Sprite,cola[i].X,cola[i].Y);}
 for(var i = 0;i<numie;i++){
@@ -149,6 +178,10 @@ if(isLeft) {doncho.Velocity_X = -4}
 if(isRight) {doncho.Velocity_X = 4}
 if (!isLeft && !isRight) {doncho.Velocity_X = 0}
 
+if(isA) {nakov.Velocity_X = -4}
+if(isD) {nakov.Velocity_X = 4}
+if (!isA && !isD) {nakov.Velocity_X = 0}
+
 
 for(var i = 0;i<numie;i++){
 	if(ie[i].Y > 500) {
@@ -157,6 +190,7 @@ for(var i = 0;i<numie;i++){
 		ie[i].X = Math.floor((Math.random()*1000)+1);
 						}
 ie[i].Velocity_Y += 0.01;
+
 	if(ie[i].isColliding(doncho)) {	
 	    ie[i].Velocity_Y = 1;
 		ie[i].Y = Math.floor((Math.random()*1)+1);
@@ -169,6 +203,36 @@ ie[i].Velocity_Y += 0.01;
 		ctx = false;
 		} 
 		}
+		
+		if(ie[i].isColliding(nakov)) {	
+	    ie[i].Velocity_Y = 1;
+		ie[i].Y = Math.floor((Math.random()*1)+1);
+		ie[i].X = Math.floor((Math.random()*1000)+1);
+		counter = counter - 10;
+		if(counter <= 0) {
+	    ctx.clearRect(0,0,canvas.width,canvas.height);
+		ctx.font="50px Arial";
+		ctx.fillText("Game Over",300,250);
+		ctx = false;
+		} 
+		}	
+		//Levels
+		if(counter >= 100) {
+		ie[i].Velocity_Y = 3.01;
+		levelcounter = 2;
+		}
+		if(counter >= 200) {
+		ie[i].Velocity_Y = 4.01;
+		levelcounter = 3;
+		}
+		if(counter >= 300) {
+		ie[i].Velocity_Y = 5.01;
+		levelcounter = 4;
+		}
+		if(counter >= 400) {
+		ie[i].Velocity_Y = 6.01;
+		levelcounter = 5;
+		}
 }
 for(var i = 0;i<numcola;i++){
 	if(cola[i].Y > 500) {
@@ -178,6 +242,12 @@ for(var i = 0;i<numcola;i++){
 						}
 cola[i].Velocity_Y += 0.01;
 	if(cola[i].isColliding(doncho)) {	
+	    cola[i].Velocity_Y = 1;
+		cola[i].Y = Math.floor((Math.random()*10)+1);
+		cola[i].X = Math.floor((Math.random()*1000)+1);
+		counter++;}
+
+    if(cola[i].isColliding(nakov)) {	
 	    cola[i].Velocity_Y = 1;
 		cola[i].Y = Math.floor((Math.random()*10)+1);
 		cola[i].X = Math.floor((Math.random()*1000)+1);
@@ -196,10 +266,33 @@ cafe[i].Velocity_Y += 0.01;
 		cafe[i].X = Math.floor((Math.random()*1000)+1);
 		counter = counter + 4;
 }
-		
+	if(cafe[i].isColliding(nakov)) {	
+	    cafe[i].Velocity_Y = 1;
+		cafe[i].Y = Math.floor((Math.random()*10)+1);
+		cafe[i].X = Math.floor((Math.random()*1000)+1);
+		counter = counter + 4;
 }
-setTimeout(MainLoop, 1000/110);
+
 }
+
+game = setTimeout(MainLoop, 1000/110);
+}
+//Pause
+var gamecounter = 0;
+	function pauseGame() {
+	game = clearTimeout(game);
+	gamecounter = 0} 
+    function unpauseGame() {
+    game = setTimeout(MainLoop, 1000/110);
+	gamecounter++;
+    if(gamecounter > 1){
+	game = clearTimeout(game);
+    }
+ }
+  
+
+
+
 
 
 
